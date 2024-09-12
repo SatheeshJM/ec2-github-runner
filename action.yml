@@ -10,7 +10,9 @@ inputs:
       Specify here which mode you want to use:
         - 'start' - to start a new runner;
         - 'stop' - to stop the previously created runner.
+        - 'default' - to make ubuntu-latest as default;
     required: true
+    default: "default"
   github-token:
     description: >-
       GitHub Personal Access Token with the 'repo' scope assigned.
@@ -43,12 +45,13 @@ inputs:
       The label is used to remove the runner from GitHub when the runner is not needed anymore.
       This input is required if you use the 'stop' mode.
     required: false
-  ec2-instance-id:
+  ec2-instance-ids:
     description: >-
-      EC2 Instance Id of the created runner.
-      The id is used to terminate the EC2 instance when the runner is not needed anymore.
+      EC2 Instance Id(s) of the created runner(s).
+      The Id(s) are used to terminate the EC2 instance(s) when the runner is not needed anymore.
       This input is required if you use the 'stop' mode.
     required: false
+    default: 'null'
   iam-role-name:
     description: >-
       IAM Role Name to attach to the created EC2 instance.
@@ -61,6 +64,21 @@ inputs:
       for example: '[{"Key": "TagKey1", "Value": "TagValue1"}, {"Key": "TagKey2", "Value": "TagValue2"}]'
     required: false
     default: '[]'
+  key-pair:
+    description: >-
+      attach key pair pem file to login
+    required : false
+    default: 'aws-stage'
+  host-name:
+    description:
+      This will be the hostname set for self hosted runner if none is specified then we will default to self-hosted.
+    required: false
+    default: "self-hosted"
+  runner-count:
+    description: >-
+      ECS instance count, defaults to 1
+    required: false
+    default: '1'
   runner-home-dir:
     description: >-
       Directory that contains actions-runner software and scripts. E.g. /home/runner/actions-runner.
@@ -77,9 +95,9 @@ outputs:
       The label is used in two cases:
       - to use as the input of 'runs-on' property for the following jobs;
       - to remove the runner from GitHub when it is not needed anymore.
-  ec2-instance-id:
+  ec2-instance-ids:
     description: >-
-      EC2 Instance Id of the created runner.
+      EC2 Instance Id(s) of the created runner(s).
       The id is used to terminate the EC2 instance when the runner is not needed anymore.
 runs:
   using: node16
